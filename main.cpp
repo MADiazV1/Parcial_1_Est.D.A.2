@@ -3,9 +3,56 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <vector>
 using namespace std;
 
+class Deuda{
+    private:
+        float capitalDeuda;
+        float tasaDeuda;
+        int numeroCuotasDeuda;
+    public:
+        Deuda(float, float, int);
+        float getCapitalDeuda();
+};
+
+float Deuda::getCapitalDeuda(){
+    return this->capitalDeuda;
+}
+
+Deuda::Deuda(float _capitalDeuda, float _tasaDeuda, int _numeroCuotasDeuda){
+    capitalDeuda = _capitalDeuda;
+    tasaDeuda = _tasaDeuda;
+    numeroCuotasDeuda = _numeroCuotasDeuda;
+}
+
+class Persona{
+    private:
+        string idCliente;
+        string nombreCliente;
+        string telefonoCliente;
+    public:
+        vector<Deuda*> deudasCliente;
+        Persona(string, string, string, vector<Deuda*>);
+        string getNombreCliente();
+
+};
+
+Persona::Persona(string _idCliente, string _nombreCliente, string _telefonoCliente, vector<Deuda*> _deudasCliente){
+    idCliente = _idCliente;
+    nombreCliente = _nombreCliente;
+    telefonoCliente = _telefonoCliente;
+    deudasCliente = _deudasCliente;
+}
+
+string Persona::getNombreCliente(){
+    return this->nombreCliente;
+}
+
 void creacion_nombre_completo(int cantidad){
+
+
+
     random_device rd;
     uniform_int_distribution<int> dist(0,19);
 
@@ -36,12 +83,18 @@ void creacion_telefono(int cantidad){
     }
 }
 
+
+void creacion_data_dummy(){}
+
 int main(){
 
-    int cantidad = 10;
-    creacion_nombre_completo(cantidad);
-    cout << endl;
-    creacion_telefono(cantidad);
+    Deuda* deuda = new Deuda(1000.0, 1.3, 12);
 
+    vector<Deuda*> deudas;
+    deudas.push_back(deuda);
+
+    Persona* persona = new Persona("1234","Miguel Angel Diaz","+32 23242342", deudas);
+    cout << persona->getNombreCliente() << endl;
+    cout << persona->deudasCliente[0]->getCapitalDeuda() << endl;
     return 0;
 }
