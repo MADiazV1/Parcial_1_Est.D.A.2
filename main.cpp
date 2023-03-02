@@ -6,6 +6,7 @@
 #include <vector>
 using namespace std;
 
+// Clase Deuda y sus metodos
 class Deuda{
     private:
         float capitalDeuda;
@@ -26,6 +27,7 @@ Deuda::Deuda(float _capitalDeuda, float _tasaDeuda, int _numeroCuotasDeuda){
     numeroCuotasDeuda = _numeroCuotasDeuda;
 }
 
+// Clase Persona y sus metodos
 class Persona{
     private:
         string idCliente;
@@ -49,52 +51,78 @@ string Persona::getNombreCliente(){
     return this->nombreCliente;
 }
 
-void creacion_nombre_completo(int cantidad){
 
+// Funcionalidad del programa
 
-
-    random_device rd;
-    uniform_int_distribution<int> dist(0,19);
-
-    string nombre[20] = {"Bruno","Dante","Hugo","Miguel","Samuel","Jose","Daniel","Grabriel","Sofia","Santiago","Julian","Mariana","Valeria","Ana","Valentina","Daniela","Laura","Tomas","Jacobo","Sebastian"};
-
-    string apellido[20] = {"Diaz","Ramirez","Aguilar","Gomez","Valencia","Villada","Gonzales","Zamudio","Restrepo","Escobar","Rodriguez","Moreno","Palacio","Chaverra","Ruiz","Barrera","Giraldo","Gutierrez","Salazar","Betancur"};
-    
-    for(int i=0;i<cantidad;i++){
-        int x = dist(rd);
-        int y = dist(rd);
-        int z = dist(rd);
-        string nombreCompleto = nombre[x] + " " + apellido[y] + " " + apellido[z];
-
-        //Insertar el nombre de la persona en el objeto
-
-        cout << nombreCompleto << endl;
-    }
-}
-
-void creacion_telefono(int cantidad){
-    srand(time(NULL));
-    for (int i = 0; i < 10; i++) {
-        string numero = "";
-        for (int j = 0; j < 10; j++) {
-            numero += to_string(rand() % 10);
+vector<Persona*> creacion_data_dummy(int cantidadDatos){
+    vector<Persona*> todasLasPersonas;
+    int contador = 0;
+    while(contador < cantidadDatos){
+        srand(time(NULL));
+        random_device rd;
+        uniform_int_distribution<int> randNombre(0,19);
+        // Creacion del ID
+        string idCliente = "";
+        for(int i=0;i<4;i++){
+            idCliente += to_string(rand()%10);
         }
-        cout << numero << endl;
+
+        // Creacion del nombre completo
+        string nombre[20] = {"Bruno","Dante","Hugo","Miguel","Samuel","Jose","Daniel","Grabriel","Sofia","Santiago","Julian","Mariana","Valeria","Ana","Valentina","Daniela","Laura","Tomas","Jacobo","Sebastian"};
+
+        string apellido[20] = {"Diaz","Ramirez","Aguilar","Gomez","Valencia","Villada","Gonzales","Zamudio","Restrepo","Escobar","Rodriguez","Moreno","Palacio","Chaverra","Ruiz","Barrera","Giraldo","Gutierrez","Salazar","Betancur"};
+
+        int variableNombre = randNombre(rd);
+        int variableApellido = randNombre(rd);
+        int variableSegundoApellido = randNombre(rd);
+        string nombreCompleto = nombre[variableNombre] + " " + apellido[variableApellido] + " " + apellido[variableSegundoApellido];
+
+        // Creacion del celular
+        string numeroTelefono = "+";
+        for(int k=0;k<2;k++){
+            numeroTelefono+= to_string(rand()%10);
+        }
+        numeroTelefono += " ";
+        for (int j = 0; j < 10; j++) {
+            numeroTelefono += to_string(rand() % 10);
+        }
+
+        // Creacion de las deudas
+        uniform_int_distribution<int> randDeudas(1,15);
+        uniform_int_distribution<int> randCapital(100, 10000);
+        uniform_real_distribution<float> randTasa(1,2);
+        uniform_int_distribution<int> randCuotas(1, 36);
+        vector<Deuda*> deudasCliente;
+        for(int i=0;i<randDeudas(rd);i++){
+            float capital = randCapital(rd);
+            float tasa = randTasa(rd);
+            int cuota = randCuotas(rd);
+
+            Deuda* d = new Deuda(capital, tasa, cuota);
+            deudasCliente.push_back(d);
+        }
+        contador++;
+        // Creacion de los objetos
+        Persona* person = new Persona(idCliente, nombreCompleto, numeroTelefono, deudasCliente);
+        todasLasPersonas.push_back(person);
     }
+
+    return todasLasPersonas;
 }
 
+void imprimir(){
 
-void creacion_data_dummy(){}
+}
 
 int main(){
+    int personas = 30;
+    vector<Persona*> v = creacion_data_dummy(personas);
+    for(int i=0;i<v.size();i++){
+        cout << v[i]->getNombreCliente() << endl;
+    }
+    
 
-    Deuda* deuda = new Deuda(1000.0, 1.3, 12);
+    cout << "Funciona" << endl;
 
-    vector<Deuda*> deudas;
-    deudas.push_back(deuda);
-
-    Persona* persona = new Persona("1234","Miguel Angel Diaz","+32 23242342", deudas);
-    cout << persona->getNombreCliente() << endl;
-    cout << persona->deudasCliente[0]->getCapitalDeuda() << endl;
     return 0;
 }
