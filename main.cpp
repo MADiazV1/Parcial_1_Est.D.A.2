@@ -12,11 +12,13 @@ class Deuda{
         float capitalDeuda;
         float tasaDeuda;
         int numeroCuotasDeuda;
+        float valorDeInteres;
     public:
         Deuda(float, float, int);
         float getCapitalDeuda();
         float getTasaDeuda();
         int getNumeroCuotasDeuda();
+        float getValorDeInteres();
 };
 
 Deuda::Deuda(float _capitalDeuda, float _tasaDeuda, int _numeroCuotasDeuda){
@@ -35,6 +37,10 @@ float Deuda::getTasaDeuda(){
 
 int Deuda::getNumeroCuotasDeuda(){
     return this->numeroCuotasDeuda;
+}
+
+float Deuda::getValorDeInteres(){
+    return this->capitalDeuda * this->tasaDeuda;
 }
 
 // Clase Persona y sus metodos
@@ -132,19 +138,35 @@ void imprimir(vector<Persona*> p){
     for(int i=0;i<p.size();i++){
         cout << p[i]->getNombreCliente() << endl;
         for(int j=0;j<p[i]->deudasCliente.size();j++){
-            cout << j+1 << ". $" << p[i]->deudasCliente[j]->getCapitalDeuda() << " - " << p[i]->deudasCliente[j]->getNumeroCuotasDeuda() << endl; 
+            cout << "   " << j+1 << ". $" << p[i]->deudasCliente[j]->getCapitalDeuda() << " - " << p[i]->deudasCliente[j]->getValorDeInteres() << " - %" << p[i]->deudasCliente[j]->getTasaDeuda() << endl; 
         }
     }
 }
 
-
+vector<Persona*> bubbleSort(vector<Persona*> p){
+    for (int i = 0; i < p.size(); i++){
+        for (int j = 0; j < p.size() - i - 1; j++){
+            if (p[j]->deudasCliente[0]->getValorDeInteres() > p[j + 1]->deudasCliente[0]->getValorDeInteres()){
+                Persona* temp;
+                temp = p[j];
+                p[j] = p[j+1];
+                p[j+1] = temp;
+            }
+        }
+    }
+    return p;
+}
 
 int main(){
     srand(time(NULL));
     random_device rd;
     uniform_int_distribution<int> dist(10,1000);
-    vector<Persona*> v = creacion_data_dummy(dist(rd));
+    vector<Persona*> v = creacion_data_dummy(/*dist(rd)*/5);
 
+    imprimir(v);
+    v = bubbleSort(v);
+    cout << endl;
+    cout << "Organizado:" << endl;
     imprimir(v);
 
     return 0;
