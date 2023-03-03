@@ -15,16 +15,26 @@ class Deuda{
     public:
         Deuda(float, float, int);
         float getCapitalDeuda();
+        float getTasaDeuda();
+        int getNumeroCuotasDeuda();
 };
-
-float Deuda::getCapitalDeuda(){
-    return this->capitalDeuda;
-}
 
 Deuda::Deuda(float _capitalDeuda, float _tasaDeuda, int _numeroCuotasDeuda){
     capitalDeuda = _capitalDeuda;
     tasaDeuda = _tasaDeuda;
     numeroCuotasDeuda = _numeroCuotasDeuda;
+}
+
+float Deuda::getCapitalDeuda(){
+    return this->capitalDeuda;
+}
+
+float Deuda::getTasaDeuda(){
+    return this->tasaDeuda;
+}
+
+int Deuda::getNumeroCuotasDeuda(){
+    return this->numeroCuotasDeuda;
 }
 
 // Clase Persona y sus metodos
@@ -37,6 +47,8 @@ class Persona{
         vector<Deuda*> deudasCliente;
         Persona(string, string, string, vector<Deuda*>);
         string getNombreCliente();
+        string getIdCliente();
+        string getTelefonoCliente();
 };
 
 Persona::Persona(string _idCliente, string _nombreCliente, string _telefonoCliente, vector<Deuda*> _deudasCliente){
@@ -50,6 +62,13 @@ string Persona::getNombreCliente(){
     return this->nombreCliente;
 }
 
+string Persona::getIdCliente(){
+    return this->idCliente;
+}
+
+string Persona::getTelefonoCliente(){
+    return this->telefonoCliente;
+}
 
 // Funcionalidad del programa
 
@@ -113,18 +132,20 @@ void imprimir(vector<Persona*> p){
     for(int i=0;i<p.size();i++){
         cout << p[i]->getNombreCliente() << endl;
         for(int j=0;j<p[i]->deudasCliente.size();j++){
-            cout << j+1 << ". $" << p[i]->deudasCliente[j]->getCapitalDeuda()<< endl; 
+            cout << j+1 << ". $" << p[i]->deudasCliente[j]->getCapitalDeuda() << " - " << p[i]->deudasCliente[j]->getNumeroCuotasDeuda() << endl; 
         }
     }
 }
 
+
+
 int main(){
-    int personas = 30;
-    vector<Persona*> v = creacion_data_dummy(personas);
+    srand(time(NULL));
+    random_device rd;
+    uniform_int_distribution<int> dist(10,1000);
+    vector<Persona*> v = creacion_data_dummy(dist(rd));
 
     imprimir(v);
-
-    cout << "Funciona" << endl;
 
     return 0;
 }
