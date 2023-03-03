@@ -37,7 +37,6 @@ class Persona{
         vector<Deuda*> deudasCliente;
         Persona(string, string, string, vector<Deuda*>);
         string getNombreCliente();
-
 };
 
 Persona::Persona(string _idCliente, string _nombreCliente, string _telefonoCliente, vector<Deuda*> _deudasCliente){
@@ -110,17 +109,20 @@ vector<Persona*> creacion_data_dummy(int cantidadDatos){
     return todasLasPersonas;
 }
 
-void imprimir(){
-
+void imprimir(vector<Persona*> p){
+    for(int i=0;i<p.size();i++){
+        cout << p[i]->getNombreCliente() << endl;
+        for(int j=0;j<p[i]->deudasCliente.size();j++){
+            cout << j+1 << ". $" << p[i]->deudasCliente[j]->getCapitalDeuda()<< endl; 
+        }
+    }
 }
 
 int main(){
     int personas = 30;
     vector<Persona*> v = creacion_data_dummy(personas);
-    for(int i=0;i<v.size();i++){
-        cout << v[i]->getNombreCliente() << endl;
-    }
-    
+
+    imprimir(v);
 
     cout << "Funciona" << endl;
 
