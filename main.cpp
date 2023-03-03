@@ -2,7 +2,6 @@
 #include <random>
 #include <string>
 #include <cstdlib>
-#include <ctime>
 #include <vector>
 using namespace std;
 
@@ -84,14 +83,15 @@ vector<Persona*> creacion_data_dummy(int cantidadDatos){
     while(contador < cantidadDatos){
         srand(time(NULL));
         random_device rd;
-        uniform_int_distribution<int> randNombre(0,19);
         // Creacion del ID
+        uniform_int_distribution<int> randIdCliente(0,9);
         string idCliente = "";
         for(int i=0;i<4;i++){
-            idCliente += to_string(rand()%10);
+            idCliente += to_string(randIdCliente(rd));
         }
 
         // Creacion del nombre completo
+        uniform_int_distribution<int> randNombre(0,19);
         string nombre[20] = {"Bruno","Dante","Hugo","Miguel","Samuel","Jose","Daniel","Grabriel","Sofia","Santiago","Julian","Mariana","Valeria","Ana","Valentina","Daniela","Laura","Tomas","Jacobo","Sebastian"};
 
         string apellido[20] = {"Diaz","Ramirez","Aguilar","Gomez","Valencia","Villada","Gonzales","Zamudio","Restrepo","Escobar","Rodriguez","Moreno","Palacio","Chaverra","Ruiz","Barrera","Giraldo","Gutierrez","Salazar","Betancur"};
@@ -102,13 +102,14 @@ vector<Persona*> creacion_data_dummy(int cantidadDatos){
         string nombreCompleto = nombre[variableNombre] + " " + apellido[variableApellido] + " " + apellido[variableSegundoApellido];
 
         // Creacion del celular
+        uniform_int_distribution<int> randTelefono(0,9);
         string numeroTelefono = "+";
         for(int k=0;k<2;k++){
-            numeroTelefono+= to_string(rand()%10);
+            numeroTelefono+= to_string(randTelefono(rd));
         }
         numeroTelefono += " ";
         for (int j = 0; j < 10; j++) {
-            numeroTelefono += to_string(rand() % 10);
+            numeroTelefono += to_string(randTelefono(rd));
         }
 
         // Creacion de las deudas
@@ -134,17 +135,34 @@ vector<Persona*> creacion_data_dummy(int cantidadDatos){
     return todasLasPersonas;
 }
 
-void imprimir(vector<Persona*> p){
+void imprimir_Informacion_Completa(vector<Persona*> p){
     for(int i=0;i<p.size();i++){
-        cout << p[i]->getNombreCliente() << endl;
+        cout << i+1 << ". " << p[i]->getNombreCliente() << " ID: " << p[i]->getIdCliente() << " Nro: " << p[i]->getTelefonoCliente() << endl;
+        cout << "   Capital actual / " << "Tasa de interes mensual / " << "Cuotas / " << "Valor de interes" << endl;
         for(int j=0;j<p[i]->deudasCliente.size();j++){
-            cout << "   " << j+1 << ". $" << p[i]->deudasCliente[j]->getCapitalDeuda() << " - " << p[i]->deudasCliente[j]->getValorDeInteres() << " - %" << p[i]->deudasCliente[j]->getTasaDeuda() << endl; 
+            cout << "   " << j+1 << ". $" << p[i]->deudasCliente[j]->getCapitalDeuda() << " - %" << p[i]->deudasCliente[j]->getTasaDeuda() << " - " << p[i]->deudasCliente[j]->getNumeroCuotasDeuda() << " mes(es) - $" << p[i]->deudasCliente[j]->getValorDeInteres() << endl; 
         }
+       cout << endl;
     }
 }
 
-vector<Persona*> bubbleSort(vector<Persona*> p){
+vector<Deuda*> organizador_Deudas(vector<Deuda*> p){
+   for (int i = 0; i < p.size(); i++){
+        for (int j = 0; j < p.size() - i - 1; j++){
+            if (p[j]->getValorDeInteres() > p[j + 1]->getValorDeInteres()){
+                Deuda* temp;
+                temp = p[j];
+                p[j] = p[j+1];
+                p[j+1] = temp;
+            }
+        }
+    }
+    return p; 
+}
+
+vector<Persona*> bubbleSort_Valor_De_Interes(vector<Persona*> p){
     for (int i = 0; i < p.size(); i++){
+        p[i]->deudasCliente = organizador_Deudas(p[i]->deudasCliente);
         for (int j = 0; j < p.size() - i - 1; j++){
             if (p[j]->deudasCliente[0]->getValorDeInteres() > p[j + 1]->deudasCliente[0]->getValorDeInteres()){
                 Persona* temp;
@@ -157,17 +175,77 @@ vector<Persona*> bubbleSort(vector<Persona*> p){
     return p;
 }
 
+vector<Deuda*> bubbleSort_Deuda_Critica(vector<Deuda*> p){
+    for (int i = 0; i < p.size(); i++){
+        for (int j = 0; j < p.size() - i - 1; j++){
+            if (p[j]->getNumeroCuotasDeuda() > p[j + 1]->getNumeroCuotasDeuda()){
+                Deuda* temp;
+                temp = p[j];
+                p[j] = p[j+1];
+                p[j+1] = temp;
+            }
+        }
+    }
+    return p; 
+}
+
+void imprimir_Informacion_Deuda_Critica(vector<Persona*> p){
+    for(int i=0;i<p.size();i++){
+        p[i]->deudasCliente = bubbleSort_Deuda_Critica(p[i]->deudasCliente);
+        cout << i+1 << ". " << p[i]->getNombreCliente() << " ID: " << p[i]->getIdCliente() << endl;
+        cout << "   Capital actual / " << "Tasa de interes mensual / " << "Cuotas / " << endl;
+        cout << "   " << "Deuda critica: $" << p[i]->deudasCliente[0]->getCapitalDeuda() << " - %" << p[i]->deudasCliente[0]->getTasaDeuda() << " - " << p[i]->deudasCliente[0]->getNumeroCuotasDeuda() << " mes(es)"<< endl; 
+       cout << endl;
+    }
+}
+
 int main(){
     srand(time(NULL));
     random_device rd;
-    uniform_int_distribution<int> dist(10,1000);
-    vector<Persona*> v = creacion_data_dummy(/*dist(rd)*/5);
+    uniform_int_distribution<int> dist(10,1000); //En esta linea puede modificar rango de la cantidad de peronas para hacer la comprobacion
+    vector<Persona*> v = creacion_data_dummy(dist(rd));
 
-    imprimir(v);
-    v = bubbleSort(v);
-    cout << endl;
-    cout << "Organizado:" << endl;
-    imprimir(v);
+    bool modo = true;
 
+    while(modo){
+        int valor;
+        cout << "1. Imprimir la lista Random." << endl;
+        cout << "2. Imprimir la lista de deuda mas critica." << endl;
+        cout << "3. Imprimir la lista ordenada por el valor de interes." << endl;
+        cout << "0. Cerrar" << endl;
+        cout << "Ingrese un valor: ";
+        cin >> valor;
+        cout << endl;
+        switch(valor){
+            case 0:{
+                modo = false;
+                cout << "Adios..." << endl;
+                break;
+            }
+            case 1:{
+                imprimir_Informacion_Completa(v);
+                cout << "=====================================================================" << endl;
+                cout << endl;
+                break;
+            }
+            case 2:{
+                imprimir_Informacion_Deuda_Critica(v);
+                cout << "=====================================================================" << endl;
+                cout << endl;
+                break;
+            }
+            case 3:{
+                v = bubbleSort_Valor_De_Interes(v);
+                imprimir_Informacion_Completa(v);
+                cout << "=====================================================================" << endl;
+                cout << endl;
+                break;
+            }
+            default:{
+                cout << "Valor erroneo" << endl;
+                break;
+            }
+        }
+    }  
     return 0;
 }
