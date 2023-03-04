@@ -131,25 +131,13 @@ vector<Persona*> creacion_data_dummy(int cantidadDatos){
         Persona* person = new Persona(idCliente, nombreCompleto, numeroTelefono, deudasCliente);
         todasLasPersonas.push_back(person);
     }
-
     return todasLasPersonas;
-}
-
-void imprimir_Informacion_Completa(vector<Persona*> p){
-    for(int i=0;i<p.size();i++){
-        cout << i+1 << ". " << p[i]->getNombreCliente() << " ID: " << p[i]->getIdCliente() << " Nro: " << p[i]->getTelefonoCliente() << endl;
-        cout << "   Capital actual / " << "Tasa de interes mensual / " << "Cuotas / " << "Valor de interes" << endl;
-        for(int j=0;j<p[i]->deudasCliente.size();j++){
-            cout << "   " << j+1 << ". $" << p[i]->deudasCliente[j]->getCapitalDeuda() << " - %" << p[i]->deudasCliente[j]->getTasaDeuda() << " - " << p[i]->deudasCliente[j]->getNumeroCuotasDeuda() << " mes(es) - $" << p[i]->deudasCliente[j]->getValorDeInteres() << endl; 
-        }
-       cout << endl;
-    }
 }
 
 vector<Deuda*> organizador_Deudas(vector<Deuda*> p){
    for (int i = 0; i < p.size(); i++){
         for (int j = 0; j < p.size() - i - 1; j++){
-            if (p[j]->getValorDeInteres() > p[j + 1]->getValorDeInteres()){
+            if (p[j]->getValorDeInteres() < p[j + 1]->getValorDeInteres()){
                 Deuda* temp;
                 temp = p[j];
                 p[j] = p[j+1];
@@ -161,43 +149,50 @@ vector<Deuda*> organizador_Deudas(vector<Deuda*> p){
 }
 
 //----------- QuickSort valor de interes -------------------
-void quickSort(vector<Persona*> p, int left, int right) {
+void quickSort_valor_de_interes(vector<Persona*> p, int left, int right) {
     int i = left;
     int j = right;
-    int tmp;
-//   int pivot = arr[(left + right) / 2];
-    int pivote = ;
-
-
-
+    Persona* tmp;
+    float pivot = p[left]->deudasCliente[0]->getValorDeInteres();
     while (i <= j) {
-        while (arr[i] < pivot) {
+        while (p[i]->deudasCliente[0]->getValorDeInteres() < pivot) {
             i++;
         }
-        while (arr[j] > pivot) {
+        while (p[j]->deudasCliente[0]->getValorDeInteres() > pivot) {
             j--;
         }
-        if (i <= j) {
-            tmp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = tmp;
+        if (i <= j) {  
+            cout << "Cambio" << endl;
+            tmp = p[i];
+            p[i] = p[j];
+            p[j] = tmp;
             i++;
             j--;
         }
     }
-
     if (left < j) {
-        quicksort(arr, left, j);
+        quickSort_valor_de_interes(p, left, j);
     }
     if (i < right) {
-        quicksort(arr, i, right);
+        quickSort_valor_de_interes(p, i, right);
     }
 }
 
+void imprimir_Informacion_Completa(vector<Persona*> p){
+    for(int i=0;i<p.size();i++){
+        p[i]->deudasCliente = organizador_Deudas(p[i]->deudasCliente);
+        cout << i+1 << ". " << p[i]->getNombreCliente() << " ID: " << p[i]->getIdCliente() << " Nro: " << p[i]->getTelefonoCliente() << endl;
+        cout << "   Capital actual / " << "Tasa de interes mensual / " << "Cuotas / " << "Valor de interes" << endl;
+        for(int j=0;j<p[i]->deudasCliente.size();j++){
+            cout << "   " << j+1 << ". $" << p[i]->deudasCliente[j]->getCapitalDeuda() << " - %" << p[i]->deudasCliente[j]->getTasaDeuda() << " - " << p[i]->deudasCliente[j]->getNumeroCuotasDeuda() << " mes(es) - $" << p[i]->deudasCliente[j]->getValorDeInteres() << endl; 
+        }
+       cout << endl;
+    }
+}
 
 // ---------------------------------
 
-vector<Deuda*> mergeSort_Deuda_Critica(vector<Deuda*> p){
+vector<Deuda*> quickSort_Deuda_Critica(vector<Deuda*> p){
     for (int i = 0; i < p.size(); i++){
         for (int j = 0; j < p.size() - i - 1; j++){
             if (p[j]->getNumeroCuotasDeuda() > p[j + 1]->getNumeroCuotasDeuda()){
@@ -211,28 +206,22 @@ vector<Deuda*> mergeSort_Deuda_Critica(vector<Deuda*> p){
     return p; 
 }
 
-// void imprimir_Informacion_Deuda_Critica(vector<Persona*> p){
-//     for(int i=0;i<p.size();i++){
-//         p[i]->deudasCliente = bubbleSort_Deuda_Critica(p[i]->deudasCliente);
-//         cout << i+1 << ". " << p[i]->getNombreCliente() << " ID: " << p[i]->getIdCliente() << endl;
-//         cout << "   Capital actual / " << "Tasa de interes mensual / " << "Cuotas / " << endl;
-//         cout << "   " << "Deuda critica: $" << p[i]->deudasCliente[0]->getCapitalDeuda() << " - %" << p[i]->deudasCliente[0]->getTasaDeuda() << " - " << p[i]->deudasCliente[0]->getNumeroCuotasDeuda() << " mes(es)"<< endl; 
-//        cout << endl;
-//     }
-// }
+void imprimir_Informacion_Deuda_Critica(vector<Persona*> p){
+    for(int i=0;i<p.size();i++){
+        p[i]->deudasCliente = quickSort_Deuda_Critica(p[i]->deudasCliente);
+        cout << i+1 << ". " << p[i]->getNombreCliente() << " ID: " << p[i]->getIdCliente() << endl;
+        cout << "   Capital actual / " << "Tasa de interes mensual / " << "Cuotas / " << endl;
+        cout << "   " << "Deuda critica: $" << p[i]->deudasCliente[0]->getCapitalDeuda() << " - %" << p[i]->deudasCliente[0]->getTasaDeuda() << " - " << p[i]->deudasCliente[0]->getNumeroCuotasDeuda() << " mes(es)"<< endl; 
+        cout << endl;
+    }
+}
 
 int main(){
     srand(time(NULL));
     random_device rd;
     uniform_int_distribution<int> dist(10,1000); //En esta linea puede modificar rango de la cantidad de peronas para hacer la comprobacion
-    vector<Persona*> v = creacion_data_dummy(/*dist(rd)*/5);
-
-    imprimir_Informacion_Completa(v);
-    cout << "=================================" << endl;
-    quickSort(v, 0, v.size()-1);
-    imprimir_Informacion_Completa(v);
-
-    /*
+    vector<Persona*> p = creacion_data_dummy(dist(rd));
+    
     bool modo = true;
     while(modo){
         int valor;
@@ -250,20 +239,20 @@ int main(){
                 break;
             }
             case 1:{
-                imprimir_Informacion_Completa(v);
+                imprimir_Informacion_Completa(p);
                 cout << "=====================================================================" << endl;
                 cout << endl;
                 break;
             }
             case 2:{
-                imprimir_Informacion_Deuda_Critica(v);
+                imprimir_Informacion_Deuda_Critica(p);
                 cout << "=====================================================================" << endl;
                 cout << endl;
                 break;
             }
             case 3:{
-                v = bubbleSort_Valor_De_Interes(v);
-                imprimir_Informacion_Completa(v);
+                quickSort_valor_de_interes(p, 0, p.size()-1);
+                imprimir_Informacion_Completa(p);
                 cout << "=====================================================================" << endl;
                 cout << endl;
                 break;
@@ -273,6 +262,6 @@ int main(){
                 break;
             }
         }
-    }  */
+    }  
     return 0;
 }

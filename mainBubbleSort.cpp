@@ -149,7 +149,7 @@ void imprimir_Informacion_Completa(vector<Persona*> p){
 vector<Deuda*> organizador_Deudas(vector<Deuda*> p){
    for (int i = 0; i < p.size(); i++){
         for (int j = 0; j < p.size() - i - 1; j++){
-            if (p[j]->getValorDeInteres() > p[j + 1]->getValorDeInteres()){
+            if (p[j]->getValorDeInteres() < p[j + 1]->getValorDeInteres()){
                 Deuda* temp;
                 temp = p[j];
                 p[j] = p[j+1];
